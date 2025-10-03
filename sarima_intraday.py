@@ -16,7 +16,7 @@ st.title("📈 Intraday Forecast (15-min intervals)")
 # -----------------------------
 # Load NIFTY100 tickers
 # -----------------------------
-ticker_df = pd.read_csv(r"C:\Users\Manoj\Downloads\New folder\ind_nifty100list.csv")
+ticker_df = pd.read_csv(r"C:\Users\Manoj\Downloads\Stock_Forecast\ind_nifty100list.csv")
 nifty100_tickers = dict(zip(ticker_df['Company Name'], ticker_df['Symbol'] + ".NS"))
 
 selected_stock = st.selectbox("Select a stock", list(nifty100_tickers.keys()))
