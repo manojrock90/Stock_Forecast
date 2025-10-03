@@ -1,0 +1,10 @@
+# pandas
+# scikit-learn
+# matplotlib
+# scipy
+# statsmodels
+# plotly
+nltk
+spacy
+tensorflow
+transformers
