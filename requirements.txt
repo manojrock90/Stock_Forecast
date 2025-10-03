@@ -3,3 +3,4 @@ pandas
 statsmodels
 streamlit
 plotly
+yfinance
