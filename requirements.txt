@@ -1,9 +1,10 @@
-# pandas
-# scikit-learn
-# matplotlib
-# scipy
-# statsmodels
-# plotly
+pandas
+scikit-learn
+matplotlib
+scipy
+statsmodels
+streamlit
+plotly
 nltk
 spacy
 tensorflow
