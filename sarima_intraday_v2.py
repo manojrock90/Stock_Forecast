@@ -10,8 +10,8 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-st.set_page_config(page_title="Intraday SARIMA Forecast", layout="wide")
-st.title("📈 Intraday Forecast (15-min intervals) with Moving Window")
+st.set_page_config(page_title="Intraday Forecast", layout="wide")
+st.title("📈 Intraday Forecast (15-min intervals)")
 
 # -----------------------------
 # Load NIFTY100 tickers
@@ -56,11 +56,16 @@ last_date = df['Datetime'].max().date()
 start_date = last_date - pd.Timedelta(days=window_days-1)
 df_window = df[df['Datetime'].dt.date >= start_date].copy()
 
+train_start = df_window['Datetime'].min()
+train_end = df_window['Datetime'].max()
+st.info(f"🕒 **Training Data Range:** {train_start.strftime('%Y-%m-%d %H:%M')} → {train_end.strftime('%Y-%m-%d %H:%M')}")
+
 if df_window.empty:
     st.warning("Not enough data in the selected window.")
     st.stop()
 
 train = df_window[price_type]
+
 
 # -----------------------------
 # SARIMA parameter ranges
