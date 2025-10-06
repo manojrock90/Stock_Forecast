@@ -7,6 +7,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import warnings
+import io
 
 warnings.filterwarnings('ignore')
 
@@ -26,7 +27,7 @@ selected_stock = st.selectbox("Select a stock", list(nifty100_tickers.keys()))
 price_type = st.selectbox("Select Price Type to Forecast", ["Open", "High", "Low", "Close"], index=3)
 
 window_days = st.number_input(
-    "How many past days to use for training SARIMA?", min_value=1, max_value=60, value=30
+    "How many past days to use for training your Model?", min_value=1, max_value=60, value=30
 )
 
 forecast_steps = st.number_input(
@@ -171,8 +172,24 @@ if st.button("Run Forecast"):
     )
 
     st.plotly_chart(fig, use_container_width=True)
-    st.subheader("Forecast Table")
+    st.subheader(f"Forecast Table for {selected_stock} ({price_type})")
     st.dataframe(forecast_df)
+
+
+    csv_buffer = io.StringIO()
+    forecast_df.to_csv(csv_buffer, index=False)
+    csv_data = csv_buffer.getvalue()
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    stock_safe_name = selected_stock.replace(" ", "_").replace("&", "and")
+    filename = f"{stock_safe_name}_forecast_{timestamp}.csv"
+
+    st.download_button(
+        label="📥 Download Forecast CSV",
+        data=csv_data,
+        file_name=filename,
+        mime="text/csv"
+    )
 
 
 # https://chatgpt.com/share/68e01bd2-62a0-8006-92eb-ed6b88f2959a
