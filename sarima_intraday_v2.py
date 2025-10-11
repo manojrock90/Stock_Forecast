@@ -8,7 +8,8 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import warnings
 import io
-
+session = requests.Session()
+session.headers.update({'User-Agent': 'Mozilla/5.0'})
 warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="Intraday Forecast", layout="wide")
