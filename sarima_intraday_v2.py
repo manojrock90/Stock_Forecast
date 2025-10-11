@@ -17,7 +17,8 @@ st.title("📈 Intraday Forecast (15-min intervals)")
 # -----------------------------
 # Load NIFTY100 tickers
 # -----------------------------
-ticker_df = pd.read_csv(r"C:\Users\Manoj\Downloads\Stock_Forecast\ind_nifty100list.csv")
+# ticker_df = pd.read_csv(r"C:\Users\Manoj\Downloads\Stock_Forecast\ind_nifty100list.csv")
+ticker_df = pd.read_csv("https://niftystock.s3.us-east-1.amazonaws.com/data/ind_nifty100list.csv")
 nifty100_tickers = dict(zip(ticker_df['Company Name'], ticker_df['Symbol'] + ".NS"))
 
 # -----------------------------
