@@ -4,3 +4,4 @@ statsmodels
 streamlit
 plotly
 yfinance
+requests
