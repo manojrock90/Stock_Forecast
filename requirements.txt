@@ -5,3 +5,5 @@ streamlit
 plotly
 yfinance
 requests
+boto3
+s3fs
