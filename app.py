@@ -116,3 +116,68 @@ st.download_button(
     file_name=filename,
     mime="text/csv"
 )
+
+
+
+# -----------------------------
+# 🔹 After 15:15 — Generate full-day actual vs forecast CSV
+# -----------------------------
+now = datetime.now()
+if now.time() >= time(15, 15):
+    st.markdown("---")
+    st.header("📊 End-of-Day Actual vs Forecast (09:15–15:15)")
+
+    today = now.date()
+    df_today = df[df['Datetime'].dt.date == today].copy()
+    df_today = df_today[(df_today['Datetime'].dt.time >= time(9, 15)) &
+                        (df_today['Datetime'].dt.time <= time(15, 15))]
+
+    if not df_today.empty:
+        # Train model on previous N days (excluding today's data)
+        df_past = df[df['Datetime'].dt.date < today]
+        train_past = df_past[price_type]
+
+        if not train_past.empty:
+            best_order, best_seasonal, _ = get_best_sarima(train_past)
+            model = SARIMAX(train_past,
+                            order=best_order,
+                            seasonal_order=best_seasonal,
+                            enforce_stationarity=True,
+                            enforce_invertibility=True)
+            model_fit = model.fit(disp=False)
+
+            # Forecast for full trading session timestamps
+            forecast_index = df_today['Datetime']
+            forecast_values = model_fit.forecast(steps=len(forecast_index))
+
+            final_df = pd.DataFrame({
+                "Datetime": forecast_index,
+                "Actual": df_today[price_type].values,
+                "Forecast": forecast_values.values
+            })
+
+            # Compute MAPE
+            final_df["MAPE (%)"] = abs(final_df["Actual"] - final_df["Forecast"]) / abs(final_df["Actual"]) * 100
+            mean_mape = final_df["MAPE (%)"].mean()
+
+            st.success(f"📈 Mean MAPE for today's session: **{mean_mape:.2f}%**")
+            st.dataframe(final_df.style.format({"Actual": "{:.2f}", "Forecast": "{:.2f}", "MAPE (%)": "{:.2f}"}))
+
+            # Download CSV
+            csv_buffer = io.StringIO()
+            final_df.to_csv(csv_buffer, index=False)
+            csv_data = csv_buffer.getvalue()
+
+            filename = f"{selected_stock.replace(' ', '_')}_Actual_vs_Forecast_{today}.csv"
+
+            st.download_button(
+                label="📥 Download Full-Day Actual vs Forecast CSV",
+                data=csv_data,
+                file_name=filename,
+                mime="text/csv"
+            )
+
+        else:
+            st.warning("⚠️ Not enough past data to train SARIMA model for today's end-of-day forecast.")
+    else:
+        st.warning("⚠️ No data found for today's trading session (09:15–15:15).")
