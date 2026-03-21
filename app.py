@@ -6,7 +6,7 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
+import datetime
 from sarima_forecast import sarima_forecast
 
 
@@ -62,7 +62,7 @@ if st.button("Run Forecast"):
 
  
 
-today = datetime.now().date()
+today = datetime.datetime.now().date()
 df_today = df[df['Datetime'].dt.date == today]
 
 fig = go.Figure()
@@ -106,7 +106,7 @@ csv_buffer = io.StringIO()
 forecast_df.to_csv(csv_buffer, index=False)
 csv_data = csv_buffer.getvalue()
 
-timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
 stock_safe_name = selected_stock.replace(" ", "_").replace("&", "and")
 filename = f"{stock_safe_name}_forecast_{timestamp}.csv"
 
@@ -122,15 +122,15 @@ st.download_button(
 # -----------------------------
 # 🔹 After 15:15 — Generate full-day actual vs forecast CSV
 # -----------------------------
-now = datetime.now()
-if now.time() >= time(15, 15):
+current_datetime = datetime.datetime.now()
+if current_datetime.time() >= datetime.time(15, 15):
     st.markdown("---")
     st.header("📊 End-of-Day Actual vs Forecast (09:15–15:15)")
 
-    today = now.date()
+    today = current_datetime.date()
     df_today = df[df['Datetime'].dt.date == today].copy()
-    df_today = df_today[(df_today['Datetime'].dt.time >= time(9, 15)) &
-                        (df_today['Datetime'].dt.time <= time(15, 15))]
+    df_today = df_today[(df_today['Datetime'].dt.time >= datetime.time(9, 15)) &
+                        (df_today['Datetime'].dt.time <= datetime.time(15, 15))]
 
     if not df_today.empty:
         # Train model on previous N days (excluding today's data)
